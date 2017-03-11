@@ -1,4 +1,5 @@
 #pragma once
+
 #include <string>
 
 using FString = std::string;
@@ -33,7 +34,6 @@ public:
 
 private:
 	int32 MyCurrentTry;
-	int32 MyMaxTries;
 	FString MyHiddenWord;
 	bool bGameIsWon;
 
