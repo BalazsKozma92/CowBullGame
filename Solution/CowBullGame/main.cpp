@@ -2,15 +2,18 @@
 #include <string>
 #include "FBullCowGame.h"
 
+using FText = std::string;
+using int32 = int;
+
 void PrintIntro();
 void PlayGame();
-std::string GetGuess();
+FText GetGuess();
 bool AskToPlayAgain();
 
 FBullCowGame BCGame;
 
 int main() {
-	std::cout << BCGame.GetCurrentTry();
+	
 
 	do {
 		PrintIntro();
@@ -21,28 +24,35 @@ int main() {
 }
 
 void PrintIntro() {
-	constexpr int WORD_LENGTH = 10;
 	std::cout << "Welcome to Cows and Bulls" << std::endl;
-	std::cout << "Can you guess the " << WORD_LENGTH;
+	std::cout << "Can you guess the " << BCGame.GetHiddenWordLength();
 	std::cout << " letter isogram I'm thinkin of?" << std::endl << std::endl;
 	return;
 }
 
 void PlayGame() {
 	BCGame.Reset();
-	int MaxTries = BCGame.GetMaxTries();
-	std::cout << MaxTries << std::endl;
+	int32 MaxTries = BCGame.GetMaxTries();
+	std::cout << "Your max tries: " << MaxTries << std::endl;
 
-	for (int i = 0; i < MaxTries; i++)
+	// TODO change FOR to WHILE
+	for (int32 i = 0; i < MaxTries; i++)
 	{
-		std::string Guess = GetGuess();
-		std::cout << "Your guess was: " << Guess << std::endl << std::endl;
+		FText Guess = GetGuess();
+
+		EGuessStatus Status = BCGame.CheckGuessValidity(Guess);
+
+		FBullCowCount BullCowCount = BCGame.SubmitGuess(Guess);
+		std::cout << "Bulls: " << BullCowCount.Bulls << std::endl;
+		std::cout << "Cows: " << BullCowCount.Cows << std::endl;
 	}
+
+	// TODO summarize game
 }
 
-std::string GetGuess() {
-	int CurrentTry = BCGame.GetCurrentTry();
-	std::string Guess = "";
+FText GetGuess() {
+	int32 CurrentTry = BCGame.GetCurrentTry();
+	FText Guess = "";
 	std::cout << "Try " << CurrentTry << ". Please Type in your guess: ";
 	std::getline(std::cin, Guess);
 	return Guess;
@@ -50,7 +60,7 @@ std::string GetGuess() {
 
 bool AskToPlayAgain() {
 	std::cout << "Do you want to play again?";
-	std::string Response = "";
+	FText Response = "";
 	std::getline(std::cin, Response);
 	return (Response[0] == 'y' || Response[0] == 'Y');
 }

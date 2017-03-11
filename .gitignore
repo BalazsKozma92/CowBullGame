@@ -32,3 +32,5 @@
 *.app
 Solution/Solution.VC.opendb
 Solution/Solution.sdf
+*.opendb
+*.db
