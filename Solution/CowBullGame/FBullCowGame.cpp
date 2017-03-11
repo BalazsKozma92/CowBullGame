@@ -1,4 +1,6 @@
 #include "FBullCowGame.h"
+#include <map>
+#define TMap std::map
 
 using int32 = int;
 
@@ -7,6 +9,7 @@ FBullCowGame::FBullCowGame() { Reset(); }
 int32 FBullCowGame::GetMaxTries() const { return MyMaxTries; }
 int32 FBullCowGame::GetCurrentTry() const { return MyCurrentTry; }
 int32 FBullCowGame::GetHiddenWordLength() const { return MyHiddenWord.length(); }
+bool FBullCowGame::IsGameWon() const { return bGameIsWon; }
 
 void FBullCowGame::Reset() {
 	FBullCowCount BullCowCount;
@@ -18,19 +21,16 @@ void FBullCowGame::Reset() {
 
 	MyMaxTries = MAX_TRIES;
 	MyHiddenWord = HIDDEN_WORD;
-
 	MyCurrentTry = 1;
+	bGameIsWon = false;
 	return;
 }
 
-bool FBullCowGame::IsGameWon() const {
-	return false;
-}
 
 EGuessStatus FBullCowGame::CheckGuessValidity(FString Guess) const {
-	if (false) {
+	if (!IsIsogram(Guess)) {
 		return EGuessStatus::Not_Isogram;
-	} else if (false) {
+	} else if (!IsLowerCase(Guess)) {
 		return EGuessStatus::Not_LowerCase;
 	} else if (Guess.length() != MyHiddenWord.length()) {
 		return EGuessStatus::Wrong_Length;
@@ -39,7 +39,7 @@ EGuessStatus FBullCowGame::CheckGuessValidity(FString Guess) const {
 	}
 }
 
-FBullCowCount FBullCowGame::SubmitGuess(FString Guess) {
+FBullCowCount FBullCowGame::SubmitValidGuess(FString Guess) {
 	MyCurrentTry++;
 	FBullCowCount BullCowCount;
 
@@ -55,5 +55,39 @@ FBullCowCount FBullCowGame::SubmitGuess(FString Guess) {
 			}
 		}
 	}
+	if (BullCowCount.Bulls == MyHiddenWord.length()) {
+		bGameIsWon = true;
+	}
+	else {
+		bGameIsWon = false;
+	}
+
 	return BullCowCount;
+}
+
+bool FBullCowGame::IsIsogram(FString Word) const {
+	if (Word.length() <= 1) { return true; }
+
+	TMap<char, bool> LetterSeen;
+	for each (char Letter in Word) {
+		Letter = tolower(Letter);
+		//if (LetterSeen.count(Letter)) {
+		if (LetterSeen[Letter]) {
+			return false;
+		}
+		else {
+			LetterSeen[Letter] = true;
+			//LetterSeen.insert(std::pair<char, bool>(Letter, true));
+		}
+	}
+	return true;
+}
+
+bool FBullCowGame::IsLowerCase(FString Word) const {
+	for each (auto Letter in Word) {
+		if (!islower(Letter)) {
+			return false;
+		}
+	}
+	return true;
 }
